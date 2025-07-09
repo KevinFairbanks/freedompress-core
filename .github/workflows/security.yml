@@ -47,7 +47,7 @@ jobs:
         sarif_file: eslint-results.sarif
 
     - name: OWASP ZAP Security Scan
-      uses: zaproxy/action-full-scan@v0.8.0
+      uses: zaproxy/action-full-scan@v0.12.0
       with:
         target: 'http://localhost:3000'
         rules_file_name: '.zap/rules.tsv'
