@@ -14,13 +14,24 @@ model User {
   id          String    @id @default(cuid())
   email       String    @unique
   name        String?
+  password    String?   // Hashed password for credential login
   role        Role      @default(USER)
+  isActive    Boolean   @default(true)
+  emailVerified DateTime?
+  
+  // Account security
+  failedAttempts Int      @default(0)
+  lockedUntil   DateTime?
+  lastLogin     DateTime?
+  
+  // Audit fields
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   
   // NextAuth.js related fields
   accounts    Account[]
   sessions    Session[]
+  auditLogs   AuditLog[]
   
   @@map("users")
 }
@@ -81,11 +92,31 @@ model Module {
   name        String        @unique
   version     String
   status      ModuleStatus  @default(INACTIVE)
-  config      String?       // JSON configuration
+  config      String?       // JSON configuration - should be validated
+  configHash  String?       // Hash of config for integrity
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
   @@map("modules")
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  action      String
+  resource    String
+  details     String?  // JSON details
+  ipAddress   String?
+  userAgent   String?
+  success     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  @@map("audit_logs")
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
 }
 
 enum Role {

@@ -5,9 +5,10 @@ The core framework for the FreedomPress boilerplate system - a modular, WordPres
 ## Features
 
 - **Database Abstraction**: Prisma ORM with SQLite (PostgreSQL ready)
-- **Authentication**: NextAuth.js with multiple providers
+- **Secure Authentication**: NextAuth.js with account lockout and audit logging
 - **Module System**: Hot-swappable modules with lifecycle management
-- **API Utilities**: Standardized API handlers with validation
+- **Security-Hardened APIs**: Rate limiting, input validation, and sanitization
+- **Comprehensive Security**: CSRF protection, security headers, and audit trails
 - **TypeScript**: Full TypeScript support throughout
 
 ## Quick Start
@@ -41,13 +42,25 @@ npm run dev
 
 ### Environment Variables
 
+Copy `.env.example` to `.env.local` and configure:
+
+```bash
+cp .env.example .env.local
+```
+
+**Important Security Notes:**
+- Generate a secure `NEXTAUTH_SECRET` with: `openssl rand -base64 32`
+- Use PostgreSQL in production, not SQLite
+- Enable HTTPS in production
+- Never commit `.env.local` to version control
+
 ```env
 # Database
 DATABASE_URL="file:./dev.db"
 
-# NextAuth.js
+# NextAuth.js - CRITICAL: Use a secure secret!
 NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=your-secret-key-here
+NEXTAUTH_SECRET=generate-a-secure-secret-here-minimum-32-characters
 
 # OAuth Providers (optional)
 GITHUB_ID=your-github-client-id
@@ -218,6 +231,44 @@ prisma/
 4. **Testing**: Run comprehensive tests
 5. **Publishing**: Publish to NPM for distribution
 
+## Security
+
+The FreedomPress Core framework implements comprehensive security measures:
+
+### Authentication Security
+- **Password hashing**: BCrypt with 12 rounds
+- **Account lockout**: 5 failed attempts = 15 minute lockout
+- **Audit logging**: All auth events logged
+- **Session management**: Secure JWT tokens
+
+### API Security
+- **Rate limiting**: 100 requests per 15 minutes per IP
+- **Input validation**: Joi schema validation
+- **Input sanitization**: XSS prevention
+- **Security headers**: CSP, HSTS, etc.
+- **CORS protection**: Configured origins only
+
+### Database Security
+- **Prisma ORM**: SQL injection prevention
+- **Data validation**: Schema-level constraints
+- **Audit trails**: All sensitive operations logged
+- **Connection encryption**: SSL/TLS in production
+
+### Environment Security
+- **Environment validation**: Required vars checked on startup
+- **Secret management**: Minimum 32-character secrets
+- **Production checks**: HTTPS, PostgreSQL requirements
+- **No sensitive data exposure**: Sanitized error messages
+
+### Security Headers
+```javascript
+'Content-Security-Policy': "default-src 'self'; ..."
+'X-Content-Type-Options': 'nosniff'
+'X-Frame-Options': 'DENY'
+'X-XSS-Protection': '1; mode=block'
+'Strict-Transport-Security': 'max-age=31536000'
+```
+
 ## Testing
 
 ```bash
@@ -229,6 +280,9 @@ npm run test:coverage
 
 # Run integration tests
 npm run test:integration
+
+# Security audit
+npm audit
 ```
 
 ## Contributing
