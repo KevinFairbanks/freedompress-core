@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "bin": {
+    "freedompress": "./bin/freedompress"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -26,8 +29,10 @@
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^24.0.12",
     "@types/react": "^19.1.8",
+    "ts-node": "^10.9.2",
     "autoprefixer": "^10.4.21",
     "bcryptjs": "^3.0.2",
+    "commander": "^12.1.0",
     "crypto-js": "^4.2.0",
     "express-rate-limit": "^7.5.1",
     "helmet": "^8.1.0",
