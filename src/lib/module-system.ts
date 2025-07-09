@@ -6,7 +6,7 @@ import {
   ModuleContext, 
   ModuleEventEmitter, 
   ModuleServiceRegistry 
-} from '@/types/module'
+} from '../types/module'
 
 class ModuleEventEmitterImpl extends EventEmitter implements ModuleEventEmitter {
   on(event: string, listener: (...args: any[]) => void): this {
